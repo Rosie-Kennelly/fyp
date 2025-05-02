@@ -1,12 +1,14 @@
 import math
 import time
 
-gesture_active = False  
-last_trigger_time = 0 
-DEBOUNCE_TIME = 0.5 
+gesture_active = False 
+last_trigger_time = 0  
+CHECK_DELAY = 0.25  
 
 THRESHOLD_HAND_FOREARM = 0.05
 THRESHOLD_FOREARM_UPPERARM = 0.18
+
+last_check_time = 0
 
 def compute_distance(joint1, joint2):
     return math.sqrt((joint2[0] - joint1[0])**2 + (joint2[1] - joint1[1])**2 + (joint2[2] - joint1[2])**2)
@@ -53,6 +55,10 @@ def check_gesture(kinect_data):
             gesture_active = False
 
 def onValueChange(channel, sampleIndex, val, prev):
-    kinect_data = {chan.name: chan.eval() for chan in op('null_kinect').chans()}
-    print("Available channels:", list(kinect_data.keys()))
-    check_gesture(kinect_data)
+    global last_check_time
+
+    current_time = time.time()
+    if current_time - last_check_time >= CHECK_DELAY:
+        last_check_time = current_time
+        kinect_data = {chan.name: chan.eval() for chan in op('null_kinect').chans()}
+        check_gesture(kinect_data)
