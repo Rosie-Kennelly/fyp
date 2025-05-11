@@ -1,9 +1,6 @@
 import math
 import time
 
-gesture_active_right = False
-gesture_active_left = False
-
 THRESHOLD_HAND_FOREARM = 0.05
 THRESHOLD_FOREARM_UPPERARM = 0.18
 
@@ -15,41 +12,33 @@ def compute_distance(joint1, joint2):
 
 
 def check_right_gesture(hand_r, forearm_r, upperarm_r):
-    global gesture_active_right
-
     distance_hand_forearm_r = compute_distance(hand_r, forearm_r)
     distance_forearm_upperarm_r = compute_distance(forearm_r, upperarm_r)
 
-    if (
+    right_gesture_active = (
         distance_hand_forearm_r > THRESHOLD_HAND_FOREARM and
         distance_forearm_upperarm_r > THRESHOLD_FOREARM_UPPERARM
-    ):
-        if not gesture_active_right:
-            op('image_switch_trigger_right')[0, 0] = '0'
-            gesture_active_right = True
-    else:
-        if gesture_active_right:
-            op('image_switch_trigger_right')[0, 0] = '1'
-            gesture_active_right = False
+    )
+        
+    if not right_gesture_active:
+        op('image_switch_trigger_right')[0, 0] = '0'
+    elif right_gesture_active:
+        op('image_switch_trigger_right')[0, 0] = '1'
 
 
 def check_left_gesture(hand_l, forearm_l, upperarm_l):
-    global gesture_active_left
-
     distance_hand_forearm_l = compute_distance(hand_l, forearm_l)
     distance_forearm_upperarm_l = compute_distance(forearm_l, upperarm_l)
 
-    if (
+    left_gesture_active = (
         distance_hand_forearm_l > THRESHOLD_HAND_FOREARM and
         distance_forearm_upperarm_l > THRESHOLD_FOREARM_UPPERARM
-    ):
-        if not gesture_active_left:
-            op('image_switch_trigger_left')[0, 0] = '0'
-            gesture_active_left = True
-    else:
-        if gesture_active_left:
-            op('image_switch_trigger_left')[0, 0] = '1'
-            gesture_active_left = False        
+    )
+
+    if not left_gesture_active:
+        op('image_switch_trigger_left')[0, 0] = '0'
+    elif not left_gesture_active:
+        op('image_switch_trigger_left')[0, 0] = '1'
 
 
 def check_gesture(kinect_data):
