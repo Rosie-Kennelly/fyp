@@ -37,7 +37,7 @@ def check_left_gesture(hand_l, forearm_l, upperarm_l):
 
     if not left_gesture_active:
         op('image_switch_trigger_left')[0, 0] = '0'
-    elif not left_gesture_active:
+    elif left_gesture_active:
         op('image_switch_trigger_left')[0, 0] = '1'
 
 
