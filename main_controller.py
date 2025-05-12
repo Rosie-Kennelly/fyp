@@ -3,12 +3,14 @@ import time
 
 THRESHOLD_HAND_FOREARM = 0.05
 THRESHOLD_FOREARM_UPPERARM = 0.18
-
-last_check_time = 0 
 CHECK_INTERVAL = 0.25 
+last_check_time = 0 
 
 def compute_distance(joint1, joint2):
-    return math.sqrt((joint2[0] - joint1[0])**2 + (joint2[1] - joint1[1])**2 + (joint2[2] - joint1[2])**2)
+    return math.sqrt((joint2[0] - joint1[0])**2 + 
+                     (joint2[1] - joint1[1])**2 + 
+                     (joint2[2] - joint1[2])**2
+                     )
 
 
 def check_right_gesture(hand_r, forearm_r, upperarm_r):
@@ -20,10 +22,8 @@ def check_right_gesture(hand_r, forearm_r, upperarm_r):
         distance_forearm_upperarm_r > THRESHOLD_FOREARM_UPPERARM
     )
         
-    if not right_gesture_active:
-        op('image_switch_trigger_right')[0, 0] = '0'
-    elif right_gesture_active:
-        op('image_switch_trigger_right')[0, 0] = '1'
+    trigger = op('image_switch_trigger_right')
+    trigger[0, 0] = '1' if right_gesture_active else '0'
 
 
 def check_left_gesture(hand_l, forearm_l, upperarm_l):
@@ -35,10 +35,8 @@ def check_left_gesture(hand_l, forearm_l, upperarm_l):
         distance_forearm_upperarm_l > THRESHOLD_FOREARM_UPPERARM
     )
 
-    if not left_gesture_active:
-        op('image_switch_trigger_left')[0, 0] = '0'
-    elif left_gesture_active:
-        op('image_switch_trigger_left')[0, 0] = '1'
+    trigger = op('image_switch_trigger_left')
+    trigger[0, 0] = '1' if left_gesture_active else '0'
 
 
 def check_gesture(kinect_data):
@@ -72,6 +70,7 @@ def check_gesture(kinect_data):
 def onValueChange(channel, sampleIndex, val, prev):
     global last_check_time
     current_time = time.time()
+    
     if current_time - last_check_time >= CHECK_INTERVAL:
         kinect_data = {chan.name: chan.eval() for chan in op('null_kinect').chans()}
         check_gesture(kinect_data)
